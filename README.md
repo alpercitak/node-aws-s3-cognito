@@ -22,10 +22,23 @@ const config = {
 module.exports = config;
 ```
 
-run the project
+run the project locally
 
 ```
 npm install
 npm run start
+```
+
+run the project on docker
+```
+docker-compose build
+docker-compose up
+```
+
+
+bundling assets
+
+```
 npx webpack
 ```
+
