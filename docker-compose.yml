@@ -1,0 +1,12 @@
+version: '3'
+services:
+
+  aws-s3-cognito-upload:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: aws-s3-cognito-upload:local
+    volumes:
+      - ./:/usr/app/
+    ports:
+      - 8001:8001
