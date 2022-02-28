@@ -14,13 +14,12 @@ create an .env file using the template of .env.example and fill it with s3 regio
 AWS_REGION="region"
 AWS_IDENTITY="identity"
 AWS_BUCKETNAME="bucket"
-
 ```
 
 run the project locally
 
 ```
-npm install
+npm i (or yarn install)
 npm run start
 ```
 
