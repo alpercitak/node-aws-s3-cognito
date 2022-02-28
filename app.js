@@ -20,11 +20,18 @@ app.use('/assets', express.static(config.dirname + '/public/assets/'));
 app.use(express.static(config.dirname + '/public/'));
 
 app.use((req, res, next) => {
-    res.locals.config = require("./.config") || {};
     return next();
 });
 app.get("/", (req, res) => {
     return res.render("home");
+});
+app.get("/aws-config", (req, res) => {
+    const config = {
+        region: process.env.AWS_REGION,
+        identity: process.env.AWS_IDENTITY,
+        bucketName: process.env.AWS_BUCKETNAME
+    };
+    return res.send(config);
 });
 
 app.listen(config.http.port);

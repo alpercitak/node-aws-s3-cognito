@@ -8,22 +8,18 @@ $(() => {
 
     // init aws sdk
     const init_aws = () => {
-        const aws = $('[data-aws]');
-        const region = aws.data('region');
-        const identity = aws.data('identity');
-        const bucketName = aws.data('bucket');
-        aws.remove();
-
-        return new Promise((resolve) => {
-            return $.getScript('https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js').then(() => {
-                AWS.config.region = region;
-                AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: identity});
-                AWS.config.credentials.get((e) => {
-                    if (e) return resolve({error: e});
-                });
-                bucket = new AWS.S3({params: {Bucket: bucketName}});
-                return resolve({});
+        return $.when(
+            $.get("/aws-config"),
+            $.getScript('https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js'),
+        ).then((r) => {
+            const aws = r[0];
+            AWS.config.region = aws.region;
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: aws.identity});
+            AWS.config.credentials.get((e) => {
+                if (e) return {error: e};
             });
+            bucket = new AWS.S3({params: {Bucket: aws.bucketName}});
+            return;
         });
     };
 

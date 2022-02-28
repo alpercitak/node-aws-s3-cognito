@@ -5,21 +5,16 @@ drag & drop multiple files and upload them to aws s3 with using cognito identity
 create an aws cognito identity\
 https://docs.aws.amazon.com/cognito/latest/developerguide/tutorial-create-identity-pool.html
 
-create a .config.js file using the template of .config.example.js and fill it with s3 region, bucket and the identity
+create an .env file using the template of .env.example and fill it with s3 region, identity and the bucket
 
 
 ```
-.config.js
+.env
 
-const config = {
-    "aws": {
-        "region": "region",
-        "identity": "identity",
-        "bucket": "bucket"
-    }
-};
+AWS_REGION="region"
+AWS_IDENTITY="identity"
+AWS_BUCKETNAME="bucket"
 
-module.exports = config;
 ```
 
 run the project locally
@@ -31,10 +26,8 @@ npm run start
 
 run the project on docker
 ```
-docker-compose build
-docker-compose up
+docker-compose up --build
 ```
-
 
 bundling assets
 
