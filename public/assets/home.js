@@ -1,9 +1,11 @@
 import './home.less';
 
+const FOLDER_PREFIX = "folder/";
+
 $(() => {
     const overlay = $(".overlay");
     const global_status = $(".global-status");
-
+    const items_container = $(".items-container");
     let bucket;
 
     // init aws sdk
@@ -18,7 +20,7 @@ $(() => {
             AWS.config.credentials.get((e) => {
                 if (e) return {error: e};
             });
-            bucket = new AWS.S3({params: {Bucket: aws.bucketName}});
+            bucket = new AWS.S3({params: {Bucket: aws.bucketName, Prefix: FOLDER_PREFIX}});
             return;
         });
     };
@@ -47,6 +49,26 @@ $(() => {
             const files = e.originalEvent.target.files || e.originalEvent.dataTransfer.files;
             Object.values(files).map((x) => {return upload(x)});
         });
+
+        items_container.find("a").on("click", () => {
+            load_items();
+        });
+    };
+
+    const load_items = () => {
+        const header = items_container.find("[data-header]");
+        const header_span = header.find("span");
+
+        items_container.find("div:not([data-header])").remove();
+        items_container.css("opacity", ".3");
+
+        bucket.listObjects((e, d) => {
+            d.Contents.map((x) => {
+                items_container.append(`<div>${x.Key}</div>`);
+            });
+            header_span.text(header_span.attr("data-text") + ` (${d.Contents.length})`);
+            items_container.css("opacity", "1");
+        });
     };
 
     const upload = (file) => {
@@ -68,7 +90,7 @@ $(() => {
         return new Promise((resolve) => {
             if (!file) return resolve({error: "file"});
 
-            const key = 'folder/' + new Date().getTime() + '_' + file.name.replace(/ /gi, "-");
+            const key = FOLDER_PREFIX + new Date().getTime() + '_' + file.name.replace(/ /gi, "-");
             const params = {Key: key, ContentType: file.type, Body: file};
 
             lbl_time.text(new Date().toLocaleString());
@@ -89,6 +111,7 @@ $(() => {
             });
         }).then((r) => {
             container.attr("data-status", r.error ? "error" : "success");
+            load_items();
         });
     };
 
@@ -97,5 +120,6 @@ $(() => {
         if (e && e.error) return global_status_init.text(JSON.stringify(e.error));
         global_status_init.text(global_status_init.attr("data-text"));
         init_events();
+        load_items();
     });
 });

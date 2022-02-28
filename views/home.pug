@@ -7,22 +7,30 @@ block content
         ="Drop"
 
     .container-fluid
-        .global-status(style="border-bottom: 1px solid #EEE; display: flex; font-size: 14px; padding: 4px;")
+        .global-status
             .init(data-text="drag & drop files to upload")
                 ="initializing"
-                .spinner-border.spinner-border-sm(style="margin-left: 8px;")
+                .spinner-border.spinner-border-sm
 
-        .upload-status-container
-            .upload-status-template.card.d-none
-                div
-                    .time
-                    .name
-                    .size
-                    a.link.d-none(href="javascript:void(0);" target="_blank")
-                div
-                    .progress
-                        .progress-bar(role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
-                        small.justify-content-center.d-flex.position-absolute.w-100
+        .row
+            .col-3
+                .items-container.card
+                    div(data-header)
+                        span(data-text="Items")="Items"
+                        a.float-end(href="javascript:void(0);")="Reload"
+
+            .col-9
+                .upload-status-container
+                    .upload-status-template.card.d-none
+                        div
+                            .time
+                            .name
+                            .size
+                            a.link.d-none(href="javascript:void(0);" target="_blank")
+                        div
+                            .progress
+                                .progress-bar(role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
+                                small.justify-content-center.d-flex.position-absolute.w-100
 
 block styles
     link(rel="stylesheet" href="/assets/home.min.css")

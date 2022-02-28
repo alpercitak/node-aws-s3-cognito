@@ -34,10 +34,37 @@
         &[data-status="error"] {
             background-color: rgba(255, 0, 0, 0.3);
         }
-    }
 
+        .progress-bar {
+            background-color: rgba(0, 0, 255, 0.3);
+        }
+    }
 }
 
-.progress-bar {
-    background-color: rgba(0, 0, 255, 0.3);
+.global-status {
+    border-bottom: 1px solid #EEE;
+    display: flex;
+    font-size: 12px;
+    padding: 8px 0;
+
+    .spinner-border {
+        margin-left: 8px;
+    }
+}
+
+.items-container {
+    font-size: 12px;
+    margin: 12px 0;
+
+    >div {
+        border: 0.3px solid #EEE;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        a {
+            text-decoration: none;
+            color: #CCC;
+        }
+    }
 }
