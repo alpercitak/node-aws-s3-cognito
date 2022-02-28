@@ -1,10 +1,13 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const config = {
     "dirname": __dirname,
-    "name": "aws-s3-cognito-upload",
+    "name": process.env.NAME,
+    "title": process.env.NAME_READABLE,
     "http": {
-        port: 8001
+        port: process.env.PORT
     }
 };
 
