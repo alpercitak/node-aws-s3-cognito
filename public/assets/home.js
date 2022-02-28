@@ -5,8 +5,10 @@ const FOLDER_PREFIX = "folder/";
 $(() => {
     const overlay = $(".overlay");
     const global_status = $(".global-status");
-    const items_container = $(".items-container");
+
     let bucket;
+
+    const scope_loader = {};
 
     // init aws sdk
     const init_aws = () => {
@@ -49,42 +51,64 @@ $(() => {
             const files = e.originalEvent.target.files || e.originalEvent.dataTransfer.files;
             Object.values(files).map((x) => {return upload(x)});
         });
-
-        items_container.find("a[data-action=load]").on("click", () => {
-            load_items();
-        });
-
-        items_container.find("a[data-action=filter]").on("click", () => {
-            items_container.find("[data-header=filter]").toggleClass("d-none");
-        });
-
-        items_container.find("input").on("keyup", (e) => {
-            const value = items_container.find("input").val();
-            const rows = items_container.find("[data-row]");
-
-            rows.each(function () {
-                const value_this = $(this).text();
-                if (value && !value_this.includes(value)) $(this).addClass("d-none");
-                else $(this).removeClass("d-none");
-            });
-        });
     };
 
-    const load_items = () => {
-        const header = items_container.find("[data-header]");
+    // loader
+    (() => {
+        let items = [];
+
+        const container = $(".items-container");
+        const header = container.find("[data-header]");
         const header_span = header.find("span");
 
-        items_container.find("div:not([data-header])").remove();
-        items_container.css("opacity", ".3");
+        const btn_filter = container.find("a[data-action=filter]");
+        const div_filter = container.find("[data-header=filter]");
+        const inp_filter = div_filter.find("input");
 
-        bucket.listObjects((e, d) => {
-            d.Contents.map((x) => {
-                items_container.append(`<div data-row>${x.Key}</div>`);
+        const btn_load = container.find("a[data-action=load]");
+
+        const __render = () => {
+            container.find("div:not([data-header])").remove();
+
+            const items_filtered = [...items].filter(x => {
+                return x.Key.includes((inp_filter.val() || "").trim());
             });
-            header_span.text(header_span.attr("data-text") + ` (${d.Contents.length})`);
-            items_container.css("opacity", "1");
+
+            items_filtered.map(x => {
+                container.append(`<div data-row>${x.Key}</div>`);
+            });
+
+            let header_text = header_span.attr("data-text") + `: ${items.length}`;
+            if (items_filtered.length != items.length) header_text += ` - ${header_span.attr("data-text-filtered")}: ${items_filtered.length}`;
+            header_span.text(header_text);
+        };
+
+        const load = () => {
+            return new Promise((resolve) => {
+                container.css("opacity", ".3");
+                return bucket.listObjects((e, d) => {
+                    items = d.Contents;
+                    // inp_filter.val(null);
+                    return resolve(__render());
+                });
+            }).then(() => {
+                container.css("opacity", "1");
+            });
+
+        }
+
+        btn_filter.on("click", () => {
+            div_filter.toggleClass("d-none");
         });
-    };
+        inp_filter.on("keyup", (e) => {
+            return __render();
+        });
+        btn_load.on("click", () => {
+            load();
+        });
+
+        scope_loader.load = load;
+    })();
 
     const upload = (file) => {
         const container = $(".upload-status-template").clone();
@@ -126,7 +150,7 @@ $(() => {
             });
         }).then((r) => {
             container.attr("data-status", r.error ? "error" : "success");
-            load_items();
+            scope_loader.load();
         });
     };
 
@@ -135,6 +159,6 @@ $(() => {
         if (e && e.error) return global_status_init.text(JSON.stringify(e.error));
         global_status_init.text(global_status_init.attr("data-text"));
         init_events();
-        load_items();
+        scope_loader.load();
     });
 });
