@@ -3,11 +3,10 @@ FROM node:14-alpine
 WORKDIR /usr/app
 
 COPY ./package*.json .
+COPY ./yarn.lock .
 
-RUN npm ci --only=production
-RUN npm i -g nodemon
+RUN yarn install --immutable --immutable-cache --check-cache
+RUN yarn global add nodemon
 
-COPY . .
-
-EXPOSE 8001
-CMD [ "nodemon", "app.js"]
+EXPOSE ${PORT}
+CMD [ "nodemon", "-L", "app.js"]

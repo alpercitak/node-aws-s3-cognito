@@ -20,6 +20,8 @@ app.use('/assets', express.static(config.dirname + '/public/assets/'));
 app.use(express.static(config.dirname + '/public/'));
 
 app.use((req, res, next) => {
+    res.locals.title = config.title;
+    res.locals.name = config.name;
     return next();
 });
 app.get("/", (req, res) => {
