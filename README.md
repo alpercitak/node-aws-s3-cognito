@@ -1,4 +1,4 @@
-# aws-s3-cognito-upload
+# aws-s3-cognito
 
 drag & drop multiple files and upload them to aws s3 with using cognito identity
 
