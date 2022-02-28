@@ -17,8 +17,10 @@ block content
                 .items-container.card
                     div(data-header)
                         span(data-text="Items")="Items"
-                        a.float-end(href="javascript:void(0);")="Reload"
-
+                        a.float-end(href="javascript:void(0);" data-action="load")="Reload"
+                        a.float-end(href="javascript:void(0);" data-action="filter")="Filter"
+                    div.d-none(data-header="filter")
+                        input.form-control.input-sm(type="text")
             .col-9
                 .upload-status-container
                     .upload-status-template.card.d-none

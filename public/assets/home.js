@@ -50,8 +50,23 @@ $(() => {
             Object.values(files).map((x) => {return upload(x)});
         });
 
-        items_container.find("a").on("click", () => {
+        items_container.find("a[data-action=load]").on("click", () => {
             load_items();
+        });
+
+        items_container.find("a[data-action=filter]").on("click", () => {
+            items_container.find("[data-header=filter]").toggleClass("d-none");
+        });
+
+        items_container.find("input").on("keyup", (e) => {
+            const value = items_container.find("input").val();
+            const rows = items_container.find("[data-row]");
+
+            rows.each(function () {
+                const value_this = $(this).text();
+                if (value && !value_this.includes(value)) $(this).addClass("d-none");
+                else $(this).removeClass("d-none");
+            });
         });
     };
 
@@ -64,7 +79,7 @@ $(() => {
 
         bucket.listObjects((e, d) => {
             d.Contents.map((x) => {
-                items_container.append(`<div>${x.Key}</div>`);
+                items_container.append(`<div data-row>${x.Key}</div>`);
             });
             header_span.text(header_span.attr("data-text") + ` (${d.Contents.length})`);
             items_container.css("opacity", "1");
