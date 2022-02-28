@@ -3,55 +3,33 @@ import './home.less';
 const FOLDER_PREFIX = "folder/";
 
 $(() => {
-    const overlay = $(".overlay");
     const global_status = $(".global-status");
-
     let bucket;
 
+    const scope_aws = {};
     const scope_loader = {};
+    const scope_uploader = {};
 
-    // init aws sdk
-    const init_aws = () => {
-        return $.when(
-            $.get("/aws-config"),
-            $.getScript('https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js'),
-        ).then((r) => {
-            const aws = r[0];
-            AWS.config.region = aws.region;
-            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: aws.identity});
-            AWS.config.credentials.get((e) => {
-                if (e) return {error: e};
+    // aws
+    (() => {
+        const init = () => {
+            return $.when(
+                $.get("/aws-config"),
+                $.getScript('https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js')
+            ).then((r) => {
+                const aws = r[0];
+                AWS.config.region = aws.region;
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: aws.identity});
+                AWS.config.credentials.get((e) => {
+                    if (e) return {error: e};
+                });
+                bucket = new AWS.S3({params: {Bucket: aws.bucketName, Prefix: FOLDER_PREFIX}});
+                return;
             });
-            bucket = new AWS.S3({params: {Bucket: aws.bucketName, Prefix: FOLDER_PREFIX}});
-            return;
-        });
-    };
+        };
 
-    const init_events = () => {
-        $("html").on("dragover", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        }).on("drop", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-
-        overlay.on('dragenter', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-        }).on('dragover', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            overlay.addClass("active");
-        }).on('dragleave', (e) => {
-        }).on('drop', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            overlay.removeClass("active");
-            const files = e.originalEvent.target.files || e.originalEvent.dataTransfer.files;
-            Object.values(files).map((x) => {return upload(x)});
-        });
-    };
+        scope_aws.init = init;
+    })();
 
     // loader
     (() => {
@@ -88,7 +66,6 @@ $(() => {
                 container.css("opacity", ".3");
                 return bucket.listObjects((e, d) => {
                     items = d.Contents;
-                    // inp_filter.val(null);
                     return resolve(__render());
                 });
             }).then(() => {
@@ -97,68 +74,106 @@ $(() => {
 
         }
 
-        btn_filter.on("click", () => {
-            div_filter.toggleClass("d-none");
-        });
-        inp_filter.on("keyup", (e) => {
-            return __render();
-        });
-        btn_load.on("click", () => {
+        const init = () => {
+            btn_filter.on("click", () => {
+                div_filter.toggleClass("d-none");
+            });
+            inp_filter.on("keyup", (e) => {
+                return __render();
+            });
+            btn_load.on("click", () => {
+                load();
+            });
+
             load();
-        });
+        };
 
         scope_loader.load = load;
+        scope_loader.init = init;
     })();
 
-    const upload = (file) => {
-        const container = $(".upload-status-template").clone();
-        container.insertAfter($(".upload-status-template"));
-        container.removeClass("upload-status-template d-none");
+    // uploader
+    (() => {
+        const overlay = $(".overlay");
 
-        const prg_wrp = container.find('.progress');
-        const prg_bar = prg_wrp.find('.progress-bar');
-        const prg_bar_lbl = prg_wrp.find("small");
+        const __upload = (file) => {
+            const container = $(".upload-status-template").clone();
+            container.insertAfter($(".upload-status-template"));
+            container.removeClass("upload-status-template d-none");
 
-        const lbl_time = container.find(".time");
-        const lbl_name = container.find(".name");
-        const lbl_size = container.find(".size");
-        const lbl_link = container.find(".link");
+            const prg_wrp = container.find('.progress');
+            const prg_bar = prg_wrp.find('.progress-bar');
+            const prg_bar_lbl = prg_wrp.find("small");
 
-        container.attr("data-status", "uploading");
+            const lbl_time = container.find(".time");
+            const lbl_name = container.find(".name");
+            const lbl_size = container.find(".size");
+            const lbl_link = container.find(".link");
 
-        return new Promise((resolve) => {
-            if (!file) return resolve({error: "file"});
+            container.attr("data-status", "uploading");
 
-            const key = FOLDER_PREFIX + new Date().getTime() + '_' + file.name.replace(/ /gi, "-");
-            const params = {Key: key, ContentType: file.type, Body: file};
+            return new Promise((resolve) => {
+                if (!file) return resolve({error: "file"});
 
-            lbl_time.text(new Date().toLocaleString());
-            lbl_name.text(file.name);
-            lbl_size.text(file.size + " Bytes");
+                const key = FOLDER_PREFIX + new Date().getTime() + '_' + file.name.replace(/ /gi, "-");
+                const params = {Key: key, ContentType: file.type, Body: file};
 
-            return bucket.upload(params, (err, data) => {
-                if (err || !data.Location) return resolve({error: 'upload'});
-                lbl_link.attr("href", data.Location).text(data.Location).removeClass("d-none");
-                return resolve({type: file.type, bucket: data.Bucket, key: data.Key, url: data.Location});
-            }).on('httpUploadProgress', (evt) => {
-                const downloadSize = evt.total;
-                const percentComplete = evt.loaded / evt.total;
-                const percent = Math.round(percentComplete * 100);
-                prg_bar.attr('aria-valuemax', evt.total).attr('aria-valuenow', evt.loaded).css('width', percent + '%');
-                prg_bar_lbl.text(percent + ' / 100 %');
-                // console.log('Progress:', evt.loaded, '/', evt.total);
+                lbl_time.text(new Date().toLocaleString());
+                lbl_name.text(file.name);
+                lbl_size.text(file.size + " Bytes");
+
+                return bucket.upload(params, (err, data) => {
+                    if (err || !data.Location) return resolve({error: 'upload'});
+                    lbl_link.attr("href", data.Location).text(data.Location).removeClass("d-none");
+                    return resolve({type: file.type, bucket: data.Bucket, key: data.Key, url: data.Location});
+                }).on('httpUploadProgress', (evt) => {
+                    const downloadSize = evt.total;
+                    const percentComplete = evt.loaded / evt.total;
+                    const percent = Math.round(percentComplete * 100);
+                    prg_bar.attr('aria-valuemax', evt.total).attr('aria-valuenow', evt.loaded).css('width', percent + '%');
+                    prg_bar_lbl.text(percent + ' / 100 %');
+                    // console.log('Progress:', evt.loaded, '/', evt.total);
+                });
+            }).then((r) => {
+                container.attr("data-status", r.error ? "error" : "success");
+                scope_loader.load();
             });
-        }).then((r) => {
-            container.attr("data-status", r.error ? "error" : "success");
-            scope_loader.load();
-        });
-    };
+        };
 
-    return init_aws().then((e) => {
+        const init = () => {
+            $("html").on("dragover", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }).on("drop", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            overlay.on('dragenter', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+            }).on('dragover', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                overlay.addClass("active");
+            }).on('dragleave', (e) => {
+            }).on('drop', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                overlay.removeClass("active");
+                const files = e.originalEvent.target.files || e.originalEvent.dataTransfer.files;
+                Object.values(files).map((x) => {return __upload(x)});
+            });
+        };
+
+        scope_uploader.init = init;
+    })();
+
+    return scope_aws.init().then((e) => {
         const global_status_init = global_status.find(".init");
         if (e && e.error) return global_status_init.text(JSON.stringify(e.error));
         global_status_init.text(global_status_init.attr("data-text"));
-        init_events();
-        scope_loader.load();
+        scope_uploader.init();
+        scope_loader.init();
     });
 });
