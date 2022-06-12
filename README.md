@@ -7,7 +7,6 @@ https://docs.aws.amazon.com/cognito/latest/developerguide/tutorial-create-identi
 
 create an .env file using the template of .env.example and fill it with s3 region, identity and the bucket
 
-
 ```
 .env
 
@@ -24,6 +23,7 @@ npm run start
 ```
 
 run the project on docker
+
 ```
 docker-compose up --build
 ```
@@ -33,4 +33,3 @@ bundling assets
 ```
 npx webpack
 ```
-

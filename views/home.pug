@@ -1,40 +1,40 @@
 extends __layout
 block content
-    nav.navbar.navbar-dark.bg-dark
-        .container-fluid
-            a.navbar-brand(href="/")=name
-    .overlay
-        ="Drop"
-
+  nav.navbar.navbar-dark.bg-dark
     .container-fluid
-        .global-status
-            .init(data-text="drag & drop files to upload")
-                ="initializing"
-                .spinner-border.spinner-border-sm
+      a.navbar-brand(href='/')= name
+  .overlay
+    = 'Drop'
 
-        .row
-            .col-3
-                .items-container.card
-                    div(data-header)
-                        span(data-text="Items" data-text-filtered="Filtered")="Items"
-                        a.float-end(href="javascript:void(0);" data-action="load")="Load"
-                        a.float-end(href="javascript:void(0);" data-action="filter")="Filter"
-                    div.d-none(data-header="filter")
-                        input.form-control.input-sm(type="text")
-            .col-9
-                .upload-status-container
-                    .upload-status-template.card.d-none
-                        div
-                            .time
-                            .name
-                            .size
-                            a.link.d-none(href="javascript:void(0);" target="_blank")
-                        div
-                            .progress
-                                .progress-bar(role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
-                                small.justify-content-center.d-flex.position-absolute.w-100
+  .container-fluid
+    .global-status
+      .init(data-text='drag & drop files to upload')
+        = 'initializing'
+        .spinner-border.spinner-border-sm
+
+    .row
+      .col-3
+        .items-container.card
+          div(data-header)
+            span(data-text='Items', data-text-filtered='Filtered')= 'Items'
+            a.float-end(href='javascript:void(0);', data-action='load')= 'Load'
+            a.float-end(href='javascript:void(0);', data-action='filter')= 'Filter'
+          .d-none(data-header='filter')
+            input.form-control.input-sm(type='text')
+      .col-9
+        .upload-status-container
+          .upload-status-template.card.d-none
+            div
+              .time
+              .name
+              .size
+              a.link.d-none(href='javascript:void(0);', target='_blank')
+            div
+              .progress
+                .progress-bar(role='progressbar', aria-valuenow='0', aria-valuemin='0', aria-valuemax='100')
+                small.justify-content-center.d-flex.position-absolute.w-100
 
 block styles
-    link(rel="stylesheet" href="/assets/home.min.css")
+  link(rel='stylesheet', href='/assets/home.min.css')
 block scripts
-    script(src="/assets/home.min.js" defer)
+  script(src='/assets/home.min.js', defer)
