@@ -74,7 +74,7 @@ $(() => {
       btn_filter.on('click', () => {
         div_filter.toggleClass('d-none');
       });
-      inp_filter.on('keyup', (e) => {
+      inp_filter.on('keyup', () => {
         return __render();
       });
       btn_load.on('click', () => {
@@ -125,7 +125,7 @@ $(() => {
             return resolve({ type: file.type, bucket: data.Bucket, key: data.Key, url: data.Location });
           })
           .on('httpUploadProgress', (evt) => {
-            const downloadSize = evt.total;
+            // const downloadSize = evt.total;
             const percentComplete = evt.loaded / evt.total;
             const percent = Math.round(percentComplete * 100);
             prg_bar
@@ -162,7 +162,7 @@ $(() => {
           e.preventDefault();
           overlay.addClass('active');
         })
-        .on('dragleave', (e) => {})
+        .on('dragleave', () => {})
         .on('drop', (e) => {
           e.stopPropagation();
           e.preventDefault();

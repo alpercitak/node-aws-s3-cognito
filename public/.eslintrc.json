@@ -10,9 +10,7 @@
         "sourceType": "module"
       },
       "globals": {
-        "ninja": true,
-        "tinymce": true,
-        "moment": true
+        "AWS": true
       }
     }
   ]
