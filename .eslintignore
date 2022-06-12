@@ -1,0 +1,16 @@
+node_modules
+dist
+build
+coverage
+.husky
+package.json
+package-lock.json
+yarn.lock
+.prettierrc
+.prettierignore
+.eslintrc
+.eslintignore
+.gitignore
+
+.min.css
+.min.js
