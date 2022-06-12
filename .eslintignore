@@ -12,5 +12,5 @@ yarn.lock
 .eslintignore
 .gitignore
 
-.min.css
-.min.js
+*.min.css
+*.min.js
