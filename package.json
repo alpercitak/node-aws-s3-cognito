@@ -41,6 +41,13 @@
     "webpack-clean-obsolete-chunks": "^0.4.0",
     "webpack-cli": "^3.3.11"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "views",
+      "public",
+      "package.json"
+    ]
+  },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "yarn format",
