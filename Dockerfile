@@ -1,11 +1,15 @@
-FROM node:22-alpine
+FROM node:22-alpine as base
+
+RUN npm i pnpm -g
+
+FROM base
 
 WORKDIR /usr/app
 
 COPY ./package*.json .
-COPY ./yarn.lock .
+COPY ./pnpm-lock.yaml .
 
-RUN yarn install --immutable --immutable-cache --check-cache
+RUN pnpm i
 
 EXPOSE ${PORT}
-CMD [ "node", "app.js"]
+CMD ["node", "app.js"]
