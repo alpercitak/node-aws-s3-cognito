@@ -6,8 +6,8 @@
   "license": "UNLICENSED",
   "author": "Alper Çıtak <citak.alper@gmail.com>",
   "scripts": {
+    "dev": "node --watch app.js & npx webpack",
     "start": "node app.js",
-    "start:dev": "node --watch app.js & npx webpack",
     "format": "prettier --write .",
     "lint": "eslint . --fix",
     "prepare": "husky install"

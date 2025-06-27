@@ -19,7 +19,7 @@ run the project locally
 
 ```
 pnpm i
-pnpm run start:dev
+pnpm dev
 ```
 
 run the project on docker
