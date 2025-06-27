@@ -7,7 +7,7 @@
   "author": "Alper Çıtak <citak.alper@gmail.com>",
   "scripts": {
     "start": "node app.js",
-    "start:dev": "nodemon app.js & npx webpack",
+    "start:dev": "node --watch app.js & npx webpack",
     "format": "prettier --write .",
     "lint": "eslint . --fix",
     "prepare": "husky install"
@@ -37,16 +37,9 @@
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "prettier": "^2.6.2",
     "style-loader": "^1.2.1",
-    "webpack": "^4.43.0",
+    "webpack": "^5.99.9",
     "webpack-clean-obsolete-chunks": "^0.4.0",
-    "webpack-cli": "^3.3.11"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "views",
-      "public",
-      "package.json"
-    ]
+    "webpack-cli": "^6.0.1"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
