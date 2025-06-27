@@ -43,8 +43,8 @@
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
-      "yarn format",
-      "yarn lint"
+      "pnpm format",
+      "pnpm lint"
     ]
   }
 }

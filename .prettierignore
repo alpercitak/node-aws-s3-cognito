@@ -5,7 +5,7 @@ coverage
 .husky
 # package.json
 # package-lock.json
-# yarn.lock
+pnpm-lock.yaml
 .prettierrc
 .prettierignore
 .eslintrc

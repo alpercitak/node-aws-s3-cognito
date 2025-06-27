@@ -18,8 +18,8 @@ AWS_BUCKETNAME="bucket"
 run the project locally
 
 ```
-npm i (or yarn install)
-npm run start:dev (yarn start:dev)
+pnpm i
+pnpm run start:dev
 ```
 
 run the project on docker
